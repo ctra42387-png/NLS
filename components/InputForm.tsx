@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LessonInput } from '../types';
-import { Loader2, Sparkles, Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { Loader2, Sparkles, Book, Layers, FileText } from 'lucide-react';
+import CompetencySelector from './CompetencySelector';
 
 interface InputFormProps {
   onSubmit: (data: LessonInput) => void;
@@ -24,15 +25,16 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
     subject: SUBJECTS[0],
     grade: GRADES[5], // Default Grade 6
     topic: '',
-    objectives: '',
-    duration: '45 phút'
+    selectedCompetencies: []
   });
-  
-  const [showCompetencies, setShowCompetencies] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCompetenciesChange = (competencies: string[]) => {
+    setFormData(prev => ({ ...prev, selectedCompetencies: competencies }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,125 +43,94 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 md:p-8">
-      <div className="mb-6">
-        <div className="flex items-center gap-3">
-          <div className="bg-indigo-100 p-2 rounded-lg">
-            <Sparkles className="w-6 h-6 text-indigo-600" />
+    <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-indigo-500/10 border border-white/50 p-6 md:p-8 relative overflow-hidden group">
+      {/* Top decoration */}
+      <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+      
+      <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <Book className="w-4 h-4 text-indigo-500" />
+              Môn học
+            </label>
+            <div className="relative">
+              <select
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all appearance-none font-medium text-gray-700"
+              >
+                {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-800">Thông tin bài dạy</h2>
-            <p className="text-xs text-gray-500">Tích hợp Khung năng lực số (Thông tư 02/2025/TT-BGDĐT)</p>
-          </div>
-        </div>
-
-        <div className="mt-3 border-t border-gray-100 pt-3">
-           <button 
-             type="button"
-             onClick={() => setShowCompetencies(!showCompetencies)}
-             className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors focus:outline-none"
-           >
-             <Info className="w-3 h-3" />
-             {showCompetencies ? "Ẩn tham khảo 6 miền năng lực số" : "Xem tham khảo 6 miền năng lực số"}
-             {showCompetencies ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-           </button>
-           
-           {showCompetencies && (
-             <div className="mt-2 p-4 bg-indigo-50 rounded-lg text-xs text-gray-700 border border-indigo-100 space-y-2 transition-all duration-300 ease-in-out">
-               <p><strong className="text-indigo-700">1. Khai thác dữ liệu & thông tin:</strong> Biết cách tìm kiếm, đánh giá độ tin cậy và quản lý dữ liệu trên môi trường số.</p>
-               <p><strong className="text-indigo-700">2. Giao tiếp & hợp tác:</strong> Tương tác qua mạng xã hội/email, chia sẻ tài liệu, làm việc nhóm trực tuyến, ứng xử văn minh.</p>
-               <p><strong className="text-indigo-700">3. Sáng tạo nội dung số:</strong> Soạn thảo văn bản, thiết kế slide, chỉnh sửa video, hiểu về bản quyền và giấy phép.</p>
-               <p><strong className="text-indigo-700">4. An toàn số:</strong> Bảo vệ thiết bị, dữ liệu cá nhân, nhận biết rủi ro mạng, bảo vệ sức khỏe thể chất/tinh thần.</p>
-               <p><strong className="text-indigo-700">5. Giải quyết vấn đề:</strong> Xử lý lỗi kỹ thuật, xác định nhu cầu và lựa chọn công nghệ phù hợp để giải quyết vấn đề.</p>
-               <p><strong className="text-indigo-700">6. Ứng dụng AI:</strong> Hiểu biết cơ bản về AI, sử dụng GenAI (Gemini, ChatGPT...) hỗ trợ học tập có trách nhiệm và đạo đức.</p>
-             </div>
-           )}
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Môn học</label>
-            <select
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50"
-            >
-              {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Khối lớp</label>
-            <select
-              name="grade"
-              value={formData.grade}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50"
-            >
-              {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
-            </select>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <Layers className="w-4 h-4 text-purple-500" />
+              Khối lớp
+            </label>
+            <div className="relative">
+              <select
+                name="grade"
+                value={formData.grade}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all appearance-none font-medium text-gray-700"
+              >
+                {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tên bài dạy / Chủ đề</label>
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-pink-500" />
+            Tên bài dạy / Chủ đề
+          </label>
           <input
             type="text"
             name="topic"
             required
-            placeholder="VD: Cấu tạo nguyên tử, Truyện Kiều, Số nguyên tố..."
+            placeholder="VD: Cấu tạo nguyên tử, Truyện Kiều..."
             value={formData.topic}
             onChange={handleChange}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all placeholder:text-gray-400 font-medium"
           />
         </div>
 
-        <div>
-           <label className="block text-sm font-medium text-gray-700 mb-1">Thời lượng</label>
-           <input
-            type="text"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            placeholder="VD: 45 phút, 2 tiết"
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Mục tiêu bài học (Yêu cầu cần đạt)</label>
-          <textarea
-            name="objectives"
-            required
-            rows={4}
-            placeholder="Nhập mục tiêu kiến thức, kỹ năng. Bạn có thể ghi chú thêm: 'Muốn học sinh dùng AI để vẽ tranh' hoặc 'Tập trung vào an toàn mạng'..."
-            value={formData.objectives}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
+        {/* Competency Selector */}
+        <div className="pt-2">
+          <CompetencySelector 
+            selectedCompetencies={formData.selectedCompetencies}
+            onChange={handleCompetenciesChange}
           />
-          <p className="text-xs text-gray-500 mt-1">Hệ thống sẽ tự động đối chiếu với 6 miền năng lực số (bao gồm cả AI) để gợi ý hoạt động.</p>
         </div>
 
         <button
           type="submit"
           disabled={isLoading}
-          className={`w-full flex items-center justify-center gap-2 py-3 px-6 rounded-lg text-white font-semibold shadow-md transition-all
+          className={`w-full flex items-center justify-center gap-3 py-4 px-6 rounded-xl text-white font-bold shadow-lg transition-all duration-300 transform
             ${isLoading 
               ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transform hover:-translate-y-0.5'
+              : 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:shadow-indigo-500/40 hover:-translate-y-1 active:scale-95'
             }`}
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Đang phân tích & thiết kế...
+              <Loader2 className="w-6 h-6 animate-spin" />
+              <span className="text-base">Đang phân tích dữ liệu...</span>
             </>
           ) : (
             <>
-              <Sparkles className="w-5 h-5" />
-              Tạo kế hoạch tích hợp
+              <Sparkles className="w-6 h-6 animate-pulse-soft" />
+              <span className="text-base">Tạo kế hoạch tích hợp ngay</span>
             </>
           )}
         </button>

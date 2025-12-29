@@ -2,8 +2,8 @@ export interface LessonInput {
   subject: string;
   grade: string;
   topic: string;
-  objectives: string;
-  duration: string; // e.g., 45 phút
+  // duration removed
+  selectedCompetencies: string[]; // List of competency codes or descriptions e.g. "1.1.TC1a - Giải thích nhu cầu tin"
 }
 
 export interface DigitalTool {

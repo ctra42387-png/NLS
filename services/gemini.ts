@@ -60,6 +60,11 @@ const lessonPlanSchema: Schema = {
 export const generateDigitalLessonPlan = async (input: LessonInput): Promise<LessonPlanResponse> => {
   const model = "gemini-2.5-flash";
   
+  // Construct a specific string for the selected competencies
+  const competencyRequirement = input.selectedCompetencies.length > 0 
+    ? `Giáo viên ĐÃ CHỌN CỤ THỂ các năng lực số sau cần tích hợp: \n${input.selectedCompetencies.map(c => `- ${c}`).join('\n')}. \n\nHÃY CHẮC CHẮN rằng các hoạt động học tập được thiết kế để giải quyết trực tiếp các mã năng lực này (Ví dụ: nếu chọn 1.1.TC1a, phải có hoạt động học sinh giải thích nhu cầu tìm tin).`
+    : `Hãy tự đề xuất các năng lực số phù hợp từ 6 miền năng lực của Thông tư 02/2025/TT-BGDĐT.`;
+
   const prompt = `
     Bạn là chuyên gia giáo dục về Chuyển đổi số, nắm vững Thông tư số 02/2025/TT-BGDĐT ngày 24/01/2025 của Bộ GD&ĐT Việt Nam quy định Khung năng lực số cho người học.
 
@@ -76,13 +81,17 @@ export const generateDigitalLessonPlan = async (input: LessonInput): Promise<Les
     - Môn: ${input.subject}
     - Lớp: ${input.grade}
     - Chủ đề: ${input.topic}
-    - Thời lượng: ${input.duration}
-    - Mục tiêu gốc: ${input.objectives}
+    
+    **LƯU Ý:** 
+    Hãy tự xác định các mục tiêu cần đạt (YCCĐ) phù hợp với Chủ đề và Lớp học theo Chương trình Giáo dục Phổ thông 2018 của Việt Nam, sau đó tích hợp công nghệ vào để đạt được các mục tiêu đó.
 
-    **YÊU CẦU:**
+    **YÊU CẦU ĐẶC BIỆT:**
+    ${competencyRequirement}
+
+    **HƯỚNG DẪN CHI TIẾT:**
     1. Đề xuất công cụ số phù hợp với bối cảnh giáo dục Việt Nam (ưu tiên công cụ miễn phí/phổ biến).
-    2. Thiết kế hoạt động học tập sao cho học sinh thực hành được các năng lực cụ thể trong 6 miền trên. **Đặc biệt chú ý tích hợp Miền 6 (AI) nếu phù hợp với lớp và môn học.**
-    3. Trong phần 'competencyFocus', hãy ghi rõ mã và tên năng lực (VD: "1.1. Tìm kiếm dữ liệu", "6.2. Sử dụng AI có trách nhiệm").
+    2. Thiết kế hoạt động học tập sao cho học sinh thực hành được các năng lực cụ thể.
+    3. Trong phần 'competencyFocus', hãy ghi rõ mã và tên năng lực (VD: "1.1.TC1a - Giải thích nhu cầu tin", "6.2. Sử dụng AI có trách nhiệm").
     4. Đánh giá kết quả học tập thông qua sản phẩm số hoặc quá trình thao tác số.
 
     Trả về JSON theo schema. Ngôn ngữ: Tiếng Việt.
