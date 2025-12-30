@@ -1,5 +1,3 @@
-
-// FIX: Removed local type definitions and imported from central types file.
 import type { CurriculumChapter } from '../types.ts';
 
 // Dữ liệu mở rộng GDPT 2018 (Tiếp tục bổ sung)

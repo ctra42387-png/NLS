@@ -1,20 +1,21 @@
-
 import React from 'react';
-import { X, Settings, Bot, FileText, Download, Sparkles, PlusCircle } from 'lucide-react';
+// FIX: Removed unused 'Download' import.
+import { X, Settings, Bot, FileText, Sparkles, PlusCircle } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const GuideStep = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
+// FIX: Refactored to use a 'description' prop instead of 'children' for clarity and to resolve potential parsing issues.
+const GuideStep = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: React.ReactNode }) => (
     <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex flex-col items-center text-center shadow-sm hover:shadow-lg hover:bg-white transition-all duration-300">
         <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">
             <Icon size={32} />
         </div>
         <h4 className="text-lg font-black text-slate-800 mb-2">{title}</h4>
         <p className="text-sm text-slate-600 font-medium leading-relaxed">
-            {children}
+            {description}
         </p>
     </div>
 );
@@ -49,22 +50,11 @@ const Guide: React.FC<Props> = ({ isOpen, onClose }) => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* FIX: The GuideStep component requires children. Changed from a self-closing tag to wrapping the text content. */}
-                    <GuideStep icon={Settings} title="Bước 1: Thiết lập Hồ sơ">
-                        Cung cấp các thông tin cơ bản như Môn, Lớp, bộ Sách giáo khoa, phạm vi kiến thức và cấu trúc số lượng câu hỏi mong muốn.
-                    </GuideStep>
-                    {/* FIX: The GuideStep component requires children. Changed from a self-closing tag to wrapping the text content. */}
-                    <GuideStep icon={Bot} title="Bước 2: AI Khởi tạo">
-                        Nhấn nút "Khởi tạo". Trí tuệ nhân tạo sẽ phân tích yêu cầu, tính toán, và tạo ra bộ hồ sơ 7991 đầy đủ chỉ trong vài giây.
-                    </GuideStep>
-                    {/* FIX: The GuideStep component requires children. Changed from a self-closing tag to wrapping the text content. */}
-                    <GuideStep icon={FileText} title="Bước 3: Xem & Tinh chỉnh">
-                        Xem chi tiết Ma trận, Bản đặc tả, Đề thi và Đáp án. Bạn có thể sao chép, in ấn hoặc xuất ra file Word, PDF để sử dụng.
-                    </GuideStep>
-                    {/* FIX: The GuideStep component requires children. Changed from a self-closing tag to wrapping the text content. */}
-                    <GuideStep icon={PlusCircle} title="Bước 4: Tính năng Phụ trợ">
-                        Sử dụng Trợ lý AI để hỏi đáp chuyên môn hoặc bấm "Lưu trữ" để quản lý các bộ hồ sơ đã tạo một cách khoa học.
-                    </GuideStep>
+                    {/* FIX: Changed component usage to pass 'description' prop and be self-closing, fixing the reported error. */}
+                    <GuideStep icon={Settings} title="Bước 1: Thiết lập Hồ sơ" description="Cung cấp các thông tin cơ bản như Môn, Lớp, bộ Sách giáo khoa, phạm vi kiến thức và cấu trúc số lượng câu hỏi mong muốn." />
+                    <GuideStep icon={Bot} title="Bước 2: AI Khởi tạo" description={'Nhấn nút "Khởi tạo". Trí tuệ nhân tạo sẽ phân tích yêu cầu, tính toán, và tạo ra bộ hồ sơ 7991 đầy đủ chỉ trong vài giây.'} />
+                    <GuideStep icon={FileText} title="Bước 3: Xem & Tinh chỉnh" description="Xem chi tiết Ma trận, Bản đặc tả, Đề thi và Đáp án. Bạn có thể sao chép, in ấn hoặc xuất ra file Word, PDF để sử dụng." />
+                    <GuideStep icon={PlusCircle} title="Bước 4: Tính năng Phụ trợ" description={'Sử dụng Trợ lý AI để hỏi đáp chuyên môn hoặc bấm "Lưu trữ" để quản lý các bộ hồ sơ đã tạo một cách khoa học.'} />
                 </div>
             </div>
 

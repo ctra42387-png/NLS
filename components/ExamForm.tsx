@@ -40,8 +40,6 @@ const INITIAL_CONFIG: ExamConfig = {
   levelDistribution: { awareness: 40, understanding: 30, application: 30 }
 };
 
-// FIX: To prevent Tailwind CSS from purging dynamically generated class names,
-// a style map is used to ensure the full class strings are present in the source code.
 const questionPartStyles = {
   sky: {
     container: 'bg-sky-50 border-sky-100',
@@ -380,7 +378,7 @@ const ExamForm: React.FC<Props> = ({ onSubmit, isLoading, config, setConfig }) =
           <div className="space-y-2">
             <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Môn học</label>
             {!isCustomSubject ? (
-              <select className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 outline-none bg-gray-50/50 transition-all hover:bg-white font-bold text-sm appearance-none cursor-pointer"
+              <select className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 outline-none bg-gray-50/50 hover:bg-white transition-all font-bold text-sm appearance-none cursor-pointer"
                 value={config.subject} onChange={(e) => e.target.value === 'other' ? setIsCustomSubject(true) : handleChange('subject', e.target.value)}>
                 {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
                 <option value="other">-- Nhập môn khác --</option>

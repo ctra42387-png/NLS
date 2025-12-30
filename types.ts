@@ -87,7 +87,6 @@ export interface ChatMessage {
   content: string;
 }
 
-// FIX: Add missing type definitions to resolve import errors.
 export interface LessonInput {
   subject: string;
   grade: string;

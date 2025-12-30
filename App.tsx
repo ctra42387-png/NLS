@@ -1,4 +1,3 @@
-// FIX: Corrected the import syntax for useState and useEffect.
 import React, { useState, useEffect } from 'react';
 import ExamForm from './components/ExamForm.tsx';
 import ResultDisplay from './components/ResultDisplay.tsx';
