@@ -87,7 +87,7 @@ export interface ChatMessage {
   content: string;
 }
 
-// FIX: Add missing type definitions for Lesson Plan feature
+// FIX: Add missing type definitions for Lesson Plan feature.
 export interface LessonInput {
   subject: string;
   grade: string;
