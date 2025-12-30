@@ -1,11 +1,13 @@
-import { GoogleGenAI, Type, Schema } from "@google/genai";
+// FIX: Removed 'Schema' from import as it is not an exported member of '@google/genai'.
+import { GoogleGenAI, Type } from "@google/genai";
 import { LessonInput, LessonPlanResponse } from "../types";
 
 // Initialize Gemini Client
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // Define the response schema strictly to ensure easy JSON parsing
-const lessonPlanSchema: Schema = {
+// FIX: Removed 'Schema' type annotation to resolve type error.
+const lessonPlanSchema = {
   type: Type.OBJECT,
   properties: {
     title: { type: Type.STRING, description: "Tiêu đề bài học được gợi ý" },
@@ -58,7 +60,8 @@ const lessonPlanSchema: Schema = {
 };
 
 export const generateDigitalLessonPlan = async (input: LessonInput): Promise<LessonPlanResponse> => {
-  const model = "gemini-2.5-flash";
+  // FIX: Updated model name to a recommended model.
+  const model = "gemini-3-flash-preview";
   
   // Construct a specific string for the selected competencies
   const competencyRequirement = input.selectedCompetencies.length > 0 

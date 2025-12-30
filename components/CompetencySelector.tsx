@@ -47,8 +47,9 @@ const CompetencySelector: React.FC<CompetencySelectorProps> = ({ selectedCompete
     const newExpandedDomains = new Set<number>();
     const newExpandedComponents = new Set<string>();
 
-    const filteredFramework = COMPETENCY_FRAMEWORK.map(domain => {
-        const matchingComponents = domain.components.map(component => {
+    // FIX: Added explicit return types to map callbacks to resolve type predicate errors.
+    const filteredFramework = COMPETENCY_FRAMEWORK.map((domain): CompetencyDomain | null => {
+        const matchingComponents = domain.components.map((component): CompetencyComponent | null => {
             const matchingIndicators = component.indicators?.filter(indicator =>
                 indicator.code.toLowerCase().includes(lowerCaseSearch) ||
                 indicator.description.toLowerCase().includes(lowerCaseSearch)

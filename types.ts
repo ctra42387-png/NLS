@@ -73,6 +73,38 @@ export interface SavedExam {
   data: GeneratedExamData;
 }
 
+// FIX: Add LessonInput and LessonPlanResponse types to fix import errors.
+export interface LessonInput {
+  subject: string;
+  grade: string;
+  topic: string;
+  selectedCompetencies: string[];
+}
+
+export interface LessonPlanResponse {
+  title: string;
+  overview: string;
+  competencySummary: string;
+  suggestedTools: {
+    name: string;
+    description: string;
+    usage: string;
+    link?: string;
+  }[];
+  activities: {
+    phase: string;
+    description: string;
+    digitalIntegration: string;
+    competencyFocus: string[];
+  }[];
+  assessments: {
+    method: string;
+    tool: string;
+    criteria: string;
+  }[];
+}
+
+
 // FIX: Add CurriculumLesson and CurriculumChapter interfaces to be used across the application.
 export interface CurriculumLesson {
   name: string;
