@@ -4,7 +4,7 @@ import ResultDisplay from './components/ResultDisplay.tsx';
 import SavedExamsList from './components/SavedExamsList.tsx';
 import MatrixSample from './components/MatrixSample.tsx';
 import AIAssistant from './components/AIAssistant.tsx';
-import Guide from './components/Guide.tsx'; // Import the new Guide component
+import Guide from './components/Guide.tsx';
 import { ExamConfig, GeneratedExamData, GenerationState, SavedExam, ExamType, QuestionFormat } from './types.ts';
 import { generateExamContent } from './services/geminiService.ts';
 import { getSavedExams, deleteExam } from './services/storageService.ts';
@@ -36,7 +36,7 @@ const App: React.FC = () => {
   const [savedExams, setSavedExams] = useState<SavedExam[]>([]);
   const [showSampleMatrix, setShowSampleMatrix] = useState(false);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
-  const [showGuide, setShowGuide] = useState(false); // State for the guide modal
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     if (view === 'history') {
@@ -51,11 +51,27 @@ const App: React.FC = () => {
       const result = await generateExamContent(config);
       setState({ isLoading: false, error: null, data: result });
       setView('results');
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Lỗi khởi tạo đề:", error);
+      let errorMessage = "Đã xảy ra một lỗi không xác định. Vui lòng thử lại sau.";
+
+      if (error.message) {
+        if (error.message.includes('API key not valid')) {
+          errorMessage = "Lỗi API Key: Khóa API không hợp lệ. Vui lòng kiểm tra lại cấu hình API Key của bạn.";
+        } else if (error.status === 429 || error.message.includes('RESOURCE_EXHAUSTED')) {
+          errorMessage = "Hệ thống AI hiện đang quá tải. Vui lòng đợi một vài phút rồi thử lại.";
+        } else if (error.message.includes('Billing account not found')) {
+          errorMessage = "Lỗi thanh toán: Dự án Google Cloud của bạn chưa được kích hoạt thanh toán. Vui lòng kiểm tra lại.";
+        } else {
+          errorMessage = "Không thể kết nối đến máy chủ AI. Vui lòng kiểm tra kết nối mạng của bạn và thử lại.";
+        }
+      } else {
+        errorMessage = "Đã xảy ra lỗi khi kết nối với AI. Vui lòng kiểm tra lại kết nối mạng hoặc API Key.";
+      }
+
       setState({ 
         isLoading: false, 
-        error: "Đã xảy ra lỗi khi kết nối với AI. Vui lòng kiểm tra lại kết nối mạng hoặc API Key.", 
+        error: errorMessage, 
         data: null 
       });
     }
@@ -148,11 +164,11 @@ const App: React.FC = () => {
         )}
 
         {state.error && (
-           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-2xl shadow-2xl z-50 border border-red-200">
-             <div className="text-center">
-                <h3 className="text-lg font-bold text-red-600 mb-2">Lỗi Hệ Thống</h3>
-                <p className="text-gray-600 mb-4">{state.error}</p>
-                <button onClick={reset} className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg">Thử lại</button>
+           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" onClick={reset}>
+             <div className="bg-white p-8 rounded-2xl shadow-2xl z-50 border border-red-200 max-w-md w-full text-center" onClick={(e) => e.stopPropagation()}>
+                <h3 className="text-xl font-bold text-red-600 mb-3">Lỗi Hệ Thống</h3>
+                <p className="text-gray-600 mb-6">{state.error}</p>
+                <button onClick={reset} className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all">Thử lại</button>
              </div>
            </div>
         )}

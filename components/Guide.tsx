@@ -1,5 +1,4 @@
 import React from 'react';
-// FIX: Removed unused 'Download' import.
 import { X, Settings, Bot, FileText, Sparkles, PlusCircle } from 'lucide-react';
 
 interface Props {
@@ -7,7 +6,6 @@ interface Props {
   onClose: () => void;
 }
 
-// FIX: Refactored to use a 'description' prop instead of 'children' for clarity and to resolve potential parsing issues.
 const GuideStep = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: React.ReactNode }) => (
     <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex flex-col items-center text-center shadow-sm hover:shadow-lg hover:bg-white transition-all duration-300">
         <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">
@@ -50,7 +48,6 @@ const Guide: React.FC<Props> = ({ isOpen, onClose }) => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* FIX: Changed component usage to pass 'description' prop and be self-closing, fixing the reported error. */}
                     <GuideStep icon={Settings} title="Bước 1: Thiết lập Hồ sơ" description="Cung cấp các thông tin cơ bản như Môn, Lớp, bộ Sách giáo khoa, phạm vi kiến thức và cấu trúc số lượng câu hỏi mong muốn." />
                     <GuideStep icon={Bot} title="Bước 2: AI Khởi tạo" description={'Nhấn nút "Khởi tạo". Trí tuệ nhân tạo sẽ phân tích yêu cầu, tính toán, và tạo ra bộ hồ sơ 7991 đầy đủ chỉ trong vài giây.'} />
                     <GuideStep icon={FileText} title="Bước 3: Xem & Tinh chỉnh" description="Xem chi tiết Ma trận, Bản đặc tả, Đề thi và Đáp án. Bạn có thể sao chép, in ấn hoặc xuất ra file Word, PDF để sử dụng." />
