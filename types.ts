@@ -87,9 +87,7 @@ export interface ChatMessage {
   content: string;
 }
 
-// FIX: Add missing types for the Digital Lesson Plan feature.
-// These types were used in services/gemini.ts, components/InputForm.tsx,
-// and components/PlanResult.tsx but were not defined.
+// FIX: Add missing type definitions for Lesson Plan feature
 export interface LessonInput {
   subject: string;
   grade: string;
@@ -97,21 +95,21 @@ export interface LessonInput {
   selectedCompetencies: string[];
 }
 
-interface SuggestedTool {
+export interface SuggestedTool {
   name: string;
   description: string;
   usage: string;
   link?: string | null;
 }
 
-interface Activity {
+export interface Activity {
   phase: string;
   description: string;
   digitalIntegration: string;
   competencyFocus: string[];
 }
 
-interface Assessment {
+export interface Assessment {
   method: string;
   tool: string;
   criteria: string;
