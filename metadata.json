@@ -1,5 +1,5 @@
 {
-  "name": "Copy of DigiPlan AI - Trợ Lý Soạn Bài Giảng Số",
-  "description": "Ứng dụng hỗ trợ giáo viên tích hợp năng lực số (theo Thông tư 02/2025/TT-BGDĐT) vào kế hoạch bài dạy sử dụng Gemini API.",
+  "name": "Trợ Lý Ra Đề Kiểm Tra CV 7791",
+  "description": "Ứng dụng hỗ trợ giáo viên xây dựng ma trận, đặc tả và đề kiểm tra theo chuẩn Công văn 7791/BGDĐT-GDTrH.",
   "requestFramePermissions": []
 }

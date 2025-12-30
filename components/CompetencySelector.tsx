@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { COMPETENCY_FRAMEWORK } from '../data/competencies';
-import { Plus, X, ChevronDown, ChevronRight, BookOpen, Check, ShieldCheck } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { COMPETENCY_FRAMEWORK, CompetencyComponent, CompetencyDomain } from '../data/competencies';
+import { X, ChevronDown, ChevronRight, Check, ShieldCheck, Search } from 'lucide-react';
 
 interface CompetencySelectorProps {
   selectedCompetencies: string[];
@@ -9,7 +9,7 @@ interface CompetencySelectorProps {
 
 const CompetencySelector: React.FC<CompetencySelectorProps> = ({ selectedCompetencies, onChange }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [manualInput, setManualInput] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   
   const [expandedDomains, setExpandedDomains] = useState<number[]>([]);
   const [expandedComponents, setExpandedComponents] = useState<string[]>([]);
@@ -38,12 +38,61 @@ const CompetencySelector: React.FC<CompetencySelectorProps> = ({ selectedCompete
     onChange(newDeps);
   };
 
-  const handleManualAdd = () => {
-    if (manualInput.trim()) {
-      addCompetency(manualInput.trim());
-      setManualInput('');
+  const searchResults = useMemo(() => {
+    if (!searchTerm.trim()) {
+        return { framework: COMPETENCY_FRAMEWORK, autoExpandDomains: [], autoExpandComponents: [] };
     }
-  };
+
+    const lowerCaseSearch = searchTerm.toLowerCase();
+    const newExpandedDomains = new Set<number>();
+    const newExpandedComponents = new Set<string>();
+
+    const filteredFramework = COMPETENCY_FRAMEWORK.map(domain => {
+        const matchingComponents = domain.components.map(component => {
+            const matchingIndicators = component.indicators?.filter(indicator =>
+                indicator.code.toLowerCase().includes(lowerCaseSearch) ||
+                indicator.description.toLowerCase().includes(lowerCaseSearch)
+            ) || [];
+
+            if (
+                matchingIndicators.length > 0 ||
+                component.code.toLowerCase().includes(lowerCaseSearch) ||
+                component.name.toLowerCase().includes(lowerCaseSearch)
+            ) {
+                newExpandedDomains.add(domain.id);
+                if (matchingIndicators.length > 0) {
+                    newExpandedComponents.add(component.code);
+                }
+                return {
+                    ...component,
+                    indicators: matchingIndicators.length > 0 ? matchingIndicators : component.indicators,
+                };
+            }
+            return null;
+        }).filter((c): c is CompetencyComponent => c !== null);
+
+        if (matchingComponents.length > 0 || domain.name.toLowerCase().includes(lowerCaseSearch)) {
+            return { ...domain, components: matchingComponents };
+        }
+
+        return null;
+    }).filter((d): d is CompetencyDomain => d !== null);
+
+    return {
+        framework: filteredFramework,
+        autoExpandDomains: Array.from(newExpandedDomains),
+        autoExpandComponents: Array.from(newExpandedComponents),
+    };
+}, [searchTerm]);
+
+useEffect(() => {
+    if (searchTerm.trim()) {
+        setIsExpanded(true); // Tự động mở bảng tra cứu khi tìm kiếm
+        setExpandedDomains(searchResults.autoExpandDomains);
+        setExpandedComponents(searchResults.autoExpandComponents);
+    }
+}, [searchTerm, searchResults]);
+
 
   return (
     <div className="border border-indigo-100 rounded-xl bg-indigo-50/30 p-5 transition-all duration-300 hover:bg-indigo-50/50 hover:border-indigo-200">
@@ -57,7 +106,7 @@ const CompetencySelector: React.FC<CompetencySelectorProps> = ({ selectedCompete
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 bg-white px-3 py-1 rounded-full border border-indigo-100 shadow-sm"
         >
-          {isExpanded ? 'Thu gọn' : 'Tra cứu khung năng lực'}
+          {isExpanded ? 'Đóng tra cứu' : 'Tra cứu & Chọn'}
           {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
         </button>
       </div>
@@ -66,7 +115,7 @@ const CompetencySelector: React.FC<CompetencySelectorProps> = ({ selectedCompete
       <div className="flex flex-wrap gap-2 mb-4 min-h-[40px]">
         {selectedCompetencies.length === 0 && (
           <div className="w-full text-center py-4 border-2 border-dashed border-indigo-200 rounded-lg bg-white/50">
-            <span className="text-sm text-gray-400 italic">Chưa chọn năng lực nào. Nhập mã hoặc chọn từ danh sách...</span>
+            <span className="text-sm text-gray-400 italic">Chưa chọn năng lực nào. Mở bảng tra cứu để chọn...</span>
           </div>
         )}
         {selectedCompetencies.map((comp, idx) => (
@@ -82,32 +131,29 @@ const CompetencySelector: React.FC<CompetencySelectorProps> = ({ selectedCompete
           </div>
         ))}
       </div>
-
-      {/* Manual Input */}
-      <div className="flex gap-2 mb-2 relative group">
-        <input
-          type="text"
-          value={manualInput}
-          onChange={(e) => setManualInput(e.target.value)}
-          placeholder="Nhập mã nhanh (VD: 1.1.TC1a)"
-          className="flex-1 text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
-          onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleManualAdd())}
-        />
-        <button
-          type="button"
-          onClick={handleManualAdd}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-600/20 active:scale-95"
-        >
-          <Plus className="w-5 h-5" />
-        </button>
-      </div>
-
+      
       {/* Lookup Framework */}
       {isExpanded && (
         <div className="mt-4 border-t border-indigo-200 pt-4 animate-fade-in-up">
-          <p className="text-xs text-indigo-600 uppercase font-bold tracking-wider mb-3 ml-1">Khung năng lực số (Thông tư 02/2025)</p>
+          {/* Search Input */}
+          <div className="relative mb-4">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Tra cứu mã hoặc nội dung năng lực (VD: 1.1.TC1a, tìm kiếm...)"
+              className="w-full text-sm border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+            />
+          </div>
+
           <div className="space-y-3 max-h-96 overflow-y-auto pr-1 custom-scrollbar">
-            {COMPETENCY_FRAMEWORK.map((domain) => (
+            {searchResults.framework.length === 0 && searchTerm.trim() && (
+                <div className="text-center py-6 text-sm text-gray-500">
+                    Không tìm thấy kết quả phù hợp.
+                </div>
+            )}
+            {searchResults.framework.map((domain) => (
               <div key={domain.id} className="border border-indigo-100 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
                 {/* Domain Level */}
                 <button
@@ -144,7 +190,6 @@ const CompetencySelector: React.FC<CompetencySelectorProps> = ({ selectedCompete
                             </span>
                           </button>
                           
-                          {/* Choose General Component */}
                           <button 
                             type="button"
                             onClick={() => addCompetency(`${comp.code} - ${comp.name}`)}
