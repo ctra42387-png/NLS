@@ -1,12 +1,8 @@
-// FIX: Removed 'Schema' from import as it is not an exported member of '@google/genai'.
 import { GoogleGenAI, Type } from "@google/genai";
 import { LessonInput, LessonPlanResponse } from "../types";
 
-// Initialize Gemini Client
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-// Define the response schema strictly to ensure easy JSON parsing
-// FIX: Removed 'Schema' type annotation to resolve type error.
 const lessonPlanSchema = {
   type: Type.OBJECT,
   properties: {
@@ -60,10 +56,8 @@ const lessonPlanSchema = {
 };
 
 export const generateDigitalLessonPlan = async (input: LessonInput): Promise<LessonPlanResponse> => {
-  // FIX: Updated model name to a recommended model.
   const model = "gemini-3-flash-preview";
   
-  // Construct a specific string for the selected competencies
   const competencyRequirement = input.selectedCompetencies.length > 0 
     ? `Giáo viên ĐÃ CHỌN CỤ THỂ các năng lực số sau cần tích hợp: \n${input.selectedCompetencies.map(c => `- ${c}`).join('\n')}. \n\nHÃY CHẮC CHẮN rằng các hoạt động học tập được thiết kế để giải quyết trực tiếp các mã năng lực này (Ví dụ: nếu chọn 1.1.TC1a, phải có hoạt động học sinh giải thích nhu cầu tìm tin).`
     : `Hãy tự đề xuất các năng lực số phù hợp từ 6 miền năng lực của Thông tư 02/2025/TT-BGDĐT.`;
